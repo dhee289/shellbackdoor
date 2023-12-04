@@ -1,2 +1,1 @@
-<?php
-//Hacked by ./Outsiders
+Hacked by ./Outsiders
