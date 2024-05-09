@@ -1,5 +1,4 @@
-%PDF-1.3
-GIF89;
+
 <!DOCTYPE html>
 <html>
 <head>
